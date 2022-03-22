@@ -54,7 +54,7 @@ class MinDominatingSet:
         return False
 
     @staticmethod
-    def inverted_index(self, d: dict):
+    def inverted_index(d: dict):
         # 本质是倒排索引后找到最长的一个
         _inverted_index = {}
         for k, v in d.items():
