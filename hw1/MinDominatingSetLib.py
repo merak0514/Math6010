@@ -99,13 +99,11 @@ class MinDominatingSet:
             self.draw_graph(save_path=f'img/{i}.jpg', colored_nodes=i)
             gif_images.append(imageio.imread(f'img/{i}.jpg'))
             os.remove(f'img/{i}.jpg')
-        imageio.mimsave("test.gif", gif_images, fps=1)
+        imageio.mimsave("result.gif", gif_images, fps=1)
 
 
 if __name__ == '__main__':
     m = MinDominatingSet()
-    # nx.draw(m.G, with_labels=True)
-    # plt.show()
     m.find_dominating_set()
     print(m.dominating_set)
     m.draw_graph(save_path='img/result.jpg')
