@@ -2,11 +2,14 @@
 import networkx as nx
 from matplotlib import pyplot as plt
 import numpy as np
+import imageio
+import os
+
 np.random.seed(777)
 
 
 class MinDominatingSet:
-    def __init__(self, p=0.2,  nodes_num=16):
+    def __init__(self, p=0.2, nodes_num=16):
         self.P = p
         self.nodes_num = nodes_num
         self.G = nx.Graph()
@@ -32,6 +35,7 @@ class MinDominatingSet:
                 selected = np.random.choice(list(self.undominated_set))
             done = self.update(selected)
             if done:
+                self.default_layout = nx.spring_layout(self.G)
                 return
 
     def update(self, selected):
@@ -49,15 +53,14 @@ class MinDominatingSet:
                 self.neibour_and_undomed[i].remove(selected)
         return False
 
+    @staticmethod
     def inverted_index(self, d: dict):
         # 本质是倒排索引后找到最长的一个
         _inverted_index = {}
         for k, v in d.items():
             for i in v:
-                _inverted_index[i] = _inverted_index.get(i, 0)+1
+                _inverted_index[i] = _inverted_index.get(i, 0) + 1
         return _inverted_index
-
-
 
     def generate_random_edges(self):
         self.G.remove_edges_from(self.G.edges())  # clear edges
@@ -69,10 +72,35 @@ class MinDominatingSet:
             if mask_1[0][i] != mask_1[1][i]:  # 无自环
                 self.G.add_edge(mask_1[0][i], mask_1[1][i])
 
-    def draw_graph(self):
-        colors = ['#fc9272' if node in self.dominating_set else '#bcbddc' for node in self.G.nodes]
-        nx.draw(self.G, node_color=colors, with_labels=True, node_size=1000)
-        plt.show()
+    def draw_graph(self, save_path=None, colored_nodes=-1, layout=None):
+        if not layout:
+            layout = self.default_layout
+        if colored_nodes == -1:
+            colors = ['#fc9272' if node in self.dominating_set else '#bcbddc' for node in self.G.nodes]
+        else:  # 为差分绘图准备
+            count = 0
+            colors = []
+            strange_colored_nodes = self.dominating_set[:colored_nodes]
+            for node in range(self.nodes_num):
+                if node in strange_colored_nodes and count < colored_nodes:
+                    colors.append('#fc9272')
+                    count += 1
+                else:
+                    colors.append('#bcbddc')
+        nx.draw(self.G, layout, node_color=colors, with_labels=True, node_size=1000)
+        # plt.show()
+        if save_path:
+            plt.savefig(save_path)
+        plt.clf()
+
+    def generate_gif(self):
+        gif_images = []
+        for i in range(len(self.dominating_set) + 1):
+            self.draw_graph(save_path=f'img/{i}.jpg', colored_nodes=i)
+            gif_images.append(imageio.imread(f'img/{i}.jpg'))
+            os.remove(f'img/{i}.jpg')
+        imageio.mimsave("test.gif", gif_images, fps=1)
+
 
 if __name__ == '__main__':
     m = MinDominatingSet()
@@ -80,4 +108,5 @@ if __name__ == '__main__':
     # plt.show()
     m.find_dominating_set()
     print(m.dominating_set)
-    m.draw_graph()
+    m.draw_graph(save_path='img/result.jpg')
+    m.generate_gif()
