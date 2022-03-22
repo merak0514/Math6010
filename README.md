@@ -1,6 +1,13 @@
 # math6010
+Follow the commands below to start.
+    
+    git clone https://github.com/sszxc/MATH6010-homework.git
+    cd MATH6010-homework/
+    python -m pip install -r requirements.txt
 
-## Homework 1
+## Homework 1: Minimum Dominating Set
 
-支配集问题：
-随机生成一张图，编写一个贪心算法求解最小支配集问题，比较所求结果与定理给出的上界。撰写报告给出问题描述，程序框架及结果分析。
+ Write a program that finds the minimum dominating set of a graph using greedy approach.
+
+![result](hw1/img/result.jpg)
+![gif](hw1/test.gif)
