@@ -1,4 +1,4 @@
-# math6010
+# Math6010
 Follow the commands below to start.
     
     git clone git@github.com:merak0514/Math6010.git
