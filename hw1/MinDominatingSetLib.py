@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import imageio
 import os
+import matplotlib.patches as mpatches
 
 np.random.seed(777)
 
@@ -88,6 +89,9 @@ class MinDominatingSet:
                 else:
                     colors.append('#bcbddc')
         nx.draw(self.G, layout, node_color=colors, with_labels=True, node_size=1000)
+        # 图例
+        patch1 = mpatches.Patch(color='#fc9272', label='Dominating Set')
+        plt.legend(handles=[patch1])
         # plt.show()
         if save_path:
             plt.savefig(save_path)
