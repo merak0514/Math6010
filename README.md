@@ -11,4 +11,4 @@ Follow the commands below to start.
     python3 hw1/main.py
 
 ![result](hw1/img/result.jpg)
-![gif](hw1/test.gif)
+![gif](hw1/result.gif)
