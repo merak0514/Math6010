@@ -1,3 +1,5 @@
 *.iml
 *.xml
 .idea/
+playground/
+.DS_Storegit
