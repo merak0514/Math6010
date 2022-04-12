@@ -3,6 +3,7 @@ import networkx as nx
 from itertools import combinations
 import numpy as np
 from matplotlib import pyplot as plt
+from typing import List, Tuple
 
 np.random.seed(777)
 
@@ -20,6 +21,8 @@ class Clique:
         self.edges_color = np.zeros(len(self.edges)) - 1  # -1 means uncolored
         for nodes in self.cliques:
             self.cliques_edges.append(list(combinations(nodes, 2)))
+        self.edges_2_cliques = self.inverted_index(self.cliques_edges)
+        self.indicator_memory = []
 
         # vars needed during drawing
         self.default_layout = nx.spring_layout(self.G)
@@ -53,6 +56,49 @@ class Clique:
         return self.edges_color
 
 
+    def solve(self):
+        """
+        better solution
+        :return: answer for the problem
+        """
+        # init indicator memory
+        for i in range(len(self.cliques)):
+            self.indicator_memory.append(self.indicator_variable(i))
+        w_black = -1
+        w_white = -1
+
+        for edge_index in range(len(self.edges_color)):
+            # W_black
+            self.edges_color[edge_index] = 0
+            for clique in self.edges_2_cliques[edge_index]:
+                self.indicator_memory[clique] = self.indicator_variable(clique)
+                w_black = sum(self.indicator_memory)
+            # W_white
+            self.edges_color[edge_index] = 1
+            for clique in self.edges_2_cliques[edge_index]:
+                self.indicator_memory[clique] = self.indicator_variable(clique)
+                w_white = sum(self.indicator_memory)
+            if w_black < w_white:
+                self.edges_color[edge_index] = 0
+            else:
+                self.edges_color[edge_index] = 1
+        return self.edges_color
+
+    def inverted_index(self, cliques: List[List[Tuple]]):
+        """
+        本质是倒排索引
+        :param cliques: 其中每个元素是这个clique中对应的边的集合
+        :return:
+        """
+        _inverted_index = {}
+        for i in range(len(cliques)):
+            edges = cliques[i]
+            for edge in edges:
+                index = self.edge_ij_2_index(*edge)  # index of edge
+                _inverted_index[index] = _inverted_index.get(index, [])
+                _inverted_index[index].append(i)  # add the clique to the edge
+
+        return _inverted_index
 
     def edge_ij_2_index(self, i, j):
         """Transforms the edge index to the index of the edge in the list of edges"""
@@ -109,7 +155,7 @@ class Clique:
 
 
 if __name__ == '__main__':
-    c = Clique(5)
-    ans = c.naive()
+    c = Clique(8)
+    ans = c.solve()
     c.draw_graph()
     print(1)
