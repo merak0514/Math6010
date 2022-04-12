@@ -4,6 +4,8 @@ from itertools import combinations
 import numpy as np
 from matplotlib import pyplot as plt
 from typing import List, Tuple
+from tqdm import tqdm
+import time
 
 np.random.seed(777)
 
@@ -31,70 +33,83 @@ class Clique:
         self.node_color = "#e5f5e0"
         self.node_edge_color = "gray"
 
+        self.time = 0
+
 
     def naive(self):
         """
-        Naive solution without any refining.
+        Naïve solution without any refining.
         :return: answer for the problem
         """
-        w_black = -1
-        w_white = -1
+        self.__init__(self.n, self.m)
+        start = time.time()
 
-        for i in range(len(self.edges_color)):
+
+        for edge_index in tqdm(range(len(self.edges_color))):
+            w_black = 0
+            w_white = 0
             # W_black
-            self.edges_color[i] = 0
+            self.edges_color[edge_index] = 0
             for j in range(len(self.cliques)):
                 w_black += self.indicator_variable(j)
             # W_white
-            self.edges_color[i] = 1
+            self.edges_color[edge_index] = 1
             for j in range(len(self.cliques)):
                 w_white += self.indicator_variable(j)
-            if w_black < w_white:
-                self.edges_color[i] = 0
-            else:
-                self.edges_color[i] = 1
-        return self.edges_color
-
-
-    def solve(self):
-        """
-        better solution
-        :return: answer for the problem
-        """
-        # init indicator memory
-        for i in range(len(self.cliques)):
-            self.indicator_memory.append(self.indicator_variable(i))
-        w_black = -1
-        w_white = -1
-
-        for edge_index in range(len(self.edges_color)):
-            # W_black
-            self.edges_color[edge_index] = 0
-            for clique in self.edges_2_cliques[edge_index]:
-                self.indicator_memory[clique] = self.indicator_variable(clique)
-                w_black = sum(self.indicator_memory)
-            # W_white
-            self.edges_color[edge_index] = 1
-            for clique in self.edges_2_cliques[edge_index]:
-                self.indicator_memory[clique] = self.indicator_variable(clique)
-                w_white = sum(self.indicator_memory)
             if w_black < w_white:
                 self.edges_color[edge_index] = 0
             else:
                 self.edges_color[edge_index] = 1
-        return self.edges_color
+        self.time = time.time() - start
+        return self.edges_color, self.time
+
+    def solve(self):
+        """
+        Better solution
+        Add a table to store indicator to slightly reduce the time complexity.
+        Only recompute the indicator when the edge is changed.
+        :return: answer for the problem
+        """
+        self.__init__(self.n, self.m)
+        start = time.time()
+        # init indicator memory
+        for i in range(len(self.cliques)):
+            self.indicator_memory.append(self.indicator_variable(i))
+
+        for edge_index in tqdm(range(len(self.edges_color))):
+            w_black = 0
+            w_white = 0
+            # W_black
+            self.edges_color[edge_index] = 0
+            for clique in self.edges_2_cliques[edge_index]:
+                self.indicator_memory[clique] = self.indicator_variable(clique)
+                w_black += self.indicator_memory[clique]
+            # W_white
+            self.edges_color[edge_index] = 1
+            for clique in self.edges_2_cliques[edge_index]:
+                self.indicator_memory[clique] = self.indicator_variable(clique)
+                w_white = self.indicator_memory[clique]
+            if w_black < w_white:
+                self.edges_color[edge_index] = 0
+            else:
+                self.edges_color[edge_index] = 1
+        self.time = time.time() - start
+        return self.edges_color, self.time
 
     def table(self):
         """
-        better solution
+        Better solution: everything in tables.
+        Make good use of the past information.
         :return: answer for the problem
         """
+        self.__init__(self.n, self.m)
+        start = time.time()
         # init indicator memory
         for i in range(len(self.cliques)):
             self.indicator_memory.append(np.power(1/2, 5))
         self.cliques_color = [-1]*len(self.cliques)  # init with -1
 
-        for edge_index in range(len(self.edges_color)):
+        for edge_index in tqdm(range(len(self.edges_color))):
             w_black = 0
             w_white = 0
             # W_black
@@ -141,7 +156,8 @@ class Clique:
                 self.edges_color[edge_index] = 1
                 self.indicator_memory = white_indicator_memory.copy()
                 self.cliques_color = white_cliques_color.copy()
-        return self.edges_color
+        self.time = time.time() - start
+        return self.edges_color, self.time
 
     def inverted_index(self, cliques: List[List[Tuple]]):
         """
@@ -201,7 +217,7 @@ class Clique:
                 draw_edges_color.append(self.white)
             else:
                 draw_edges_color.append(self.black)
-        nx.draw(self.G, self.default_layout, with_labels=True, node_size=800,
+        nx.draw(self.G, self.default_layout, with_labels=True, node_size=600,
                 node_color=self.node_color,
                 edgecolors=self.node_edge_color,
                 edge_color=draw_edges_color,
@@ -210,10 +226,10 @@ class Clique:
         plt.show()
 
 
-
-
 if __name__ == '__main__':
-    c = Clique(200)
-    ans = c.table()
+    c = Clique(20)
+    ans, t1 = c.naive()
+    _, t2 = c.solve()
+    _, t3 = c.table()
     c.draw_graph()
-    print(1)
+    print(f"Done! t1: {t1}, t2: {t2}, t3: {t3}")
