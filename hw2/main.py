@@ -29,7 +29,7 @@ class Clique:
         self.white = 'tab:red'
         self.black = 'tab:blue'
         self.node_color = "#e5f5e0"
-        self.node_edge_color = "#a1d99b"
+        self.node_edge_color = "gray"
 
 
     def naive(self):
@@ -84,6 +84,65 @@ class Clique:
                 self.edges_color[edge_index] = 1
         return self.edges_color
 
+    def table(self):
+        """
+        better solution
+        :return: answer for the problem
+        """
+        # init indicator memory
+        for i in range(len(self.cliques)):
+            self.indicator_memory.append(np.power(1/2, 5))
+        self.cliques_color = [-1]*len(self.cliques)  # init with -1
+
+        for edge_index in range(len(self.edges_color)):
+            w_black = 0
+            w_white = 0
+            # W_black
+            black_indicator_memory = self.indicator_memory.copy()
+            black_cliques_color = self.cliques_color.copy()
+            self.edges_color[edge_index] = 0
+            for clique in self.edges_2_cliques[edge_index]:
+                if black_indicator_memory[clique] == 0:  # already heterochromatic
+                    continue
+                if black_cliques_color[clique] == -1:  # no color for the clique yet
+                    black_cliques_color[clique] = 0
+                    w_black += self.indicator_memory[clique]
+                    continue
+                else:
+                    if black_cliques_color[clique] != 0:  # not monochromatic now
+                        black_indicator_memory[clique] = 0
+                    else:  # still monochromatic now
+                        black_indicator_memory[clique] = black_indicator_memory[clique] * 2
+                        w_black += black_indicator_memory[clique]
+
+            # W_white
+            white_indicator_memory = self.indicator_memory.copy()
+            white_cliques_color = self.cliques_color.copy()
+            self.edges_color[edge_index] = 1
+            for clique in self.edges_2_cliques[edge_index]:
+                if white_indicator_memory[clique] == 0:  # already heterochromatic
+                    continue
+                if white_cliques_color[clique] == -1:  # no color for the clique yet
+                    white_cliques_color[clique] = 1
+                    w_white += self.indicator_memory[clique]
+                    continue
+                else:
+                    if white_cliques_color[clique] != 1:  # not monochromatic now
+                        white_indicator_memory[clique] = 0
+                    else:  # still monochromatic now
+                        white_indicator_memory[clique] = white_indicator_memory[clique] * 2
+                        w_white += white_indicator_memory[clique]
+
+            if w_black < w_white:  # color as black
+                self.edges_color[edge_index] = 0
+                self.indicator_memory = black_indicator_memory.copy()
+                self.cliques_color = black_cliques_color.copy()
+            else:  # color as white
+                self.edges_color[edge_index] = 1
+                self.indicator_memory = white_indicator_memory.copy()
+                self.cliques_color = white_cliques_color.copy()
+        return self.edges_color
+
     def inverted_index(self, cliques: List[List[Tuple]]):
         """
         本质是倒排索引
@@ -105,7 +164,6 @@ class Clique:
         if i >= j:
             return -1
         return int((2*self.n-1-i) * i /2 + (j-i-1))
-
 
     def indicator_variable(self, i):
         """
@@ -143,19 +201,19 @@ class Clique:
                 draw_edges_color.append(self.white)
             else:
                 draw_edges_color.append(self.black)
-        nx.draw(self.G, self.default_layout, with_labels=True, node_size=1000,
-                node_color = self.node_color,
-                edgecolors = self.node_edge_color,
+        nx.draw(self.G, self.default_layout, with_labels=True, node_size=800,
+                node_color=self.node_color,
+                edgecolors=self.node_edge_color,
                 edge_color=draw_edges_color,
                 width=2)
-        nx.draw_networkx_edges(self.G,self.default_layout, width=8, edge_color=draw_edges_color, alpha=0.5)
+        # nx.draw_networkx_edges(self.G,self.default_layout, width=8, edge_color=draw_edges_color, alpha=0.5)
         plt.show()
 
 
 
 
 if __name__ == '__main__':
-    c = Clique(8)
-    ans = c.solve()
+    c = Clique(200)
+    ans = c.table()
     c.draw_graph()
     print(1)
