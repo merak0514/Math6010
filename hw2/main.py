@@ -2,6 +2,10 @@
 import networkx as nx
 from itertools import combinations
 import numpy as np
+from matplotlib import pyplot as plt
+
+np.random.seed(777)
+
 
 class Clique:
     def __init__(self, n, m=4):
@@ -16,6 +20,13 @@ class Clique:
         self.edges_color = np.zeros(len(self.edges)) - 1  # -1 means uncolored
         for nodes in self.cliques:
             self.cliques_edges.append(list(combinations(nodes, 2)))
+
+        # vars needed during drawing
+        self.default_layout = nx.spring_layout(self.G)
+        self.white = 'tab:red'
+        self.black = 'tab:blue'
+        self.node_color = "#e5f5e0"
+        self.node_edge_color = "#a1d99b"
 
 
     def naive(self):
@@ -79,10 +90,26 @@ class Clique:
         self.edges_color[2] = 0
 
 
+    def draw_graph(self):
+        draw_edges_color = []
+        for c in self.edges_color:
+            if c == 1:
+                draw_edges_color.append(self.white)
+            else:
+                draw_edges_color.append(self.black)
+        nx.draw(self.G, self.default_layout, with_labels=True, node_size=1000,
+                node_color = self.node_color,
+                edgecolors = self.node_edge_color,
+                edge_color=draw_edges_color,
+                width=2)
+        nx.draw_networkx_edges(self.G,self.default_layout, width=8, edge_color=draw_edges_color, alpha=0.5)
+        plt.show()
+
 
 
 
 if __name__ == '__main__':
     c = Clique(5)
-    ans = c.solve()
+    ans = c.naive()
+    c.draw_graph()
     print(1)
