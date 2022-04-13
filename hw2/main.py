@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 from typing import List, Tuple
 from tqdm import tqdm
 import time
+from tabulate import tabulate
 
 np.random.seed(777)
 
@@ -14,7 +15,7 @@ class Clique:
     def __init__(self, n, m=4):
         self.n = n  # total number of nodes
         self.m = m  # m is the number of nodes in a clique
-        self.n_edges_clique = int((m-1)*m/2)  # number of edges in a clique
+        self.n_edges_clique = int((m - 1) * m / 2)  # number of edges in a clique
         self.G = nx.complete_graph(n)
         self.nodes = list(self.G.nodes)
         self.edges = list(self.G.edges)  # 暗含了这里的输出顺序的信息。
@@ -35,7 +36,6 @@ class Clique:
 
         self.time = 0
 
-
     def naive(self):
         """
         Naïve solution without any refining.
@@ -43,7 +43,6 @@ class Clique:
         """
         self.__init__(self.n, self.m)
         start = time.time()
-
 
         for edge_index in tqdm(range(len(self.edges_color))):
             w_black = 0
@@ -106,8 +105,8 @@ class Clique:
         start = time.time()
         # init indicator memory
         for i in range(len(self.cliques)):
-            self.indicator_memory.append(np.power(1/2, 5))
-        self.cliques_color = [-1]*len(self.cliques)  # init with -1
+            self.indicator_memory.append(np.power(1 / 2, 5))
+        self.cliques_color = [-1] * len(self.cliques)  # init with -1
 
         for edge_index in tqdm(range(len(self.edges_color))):
             w_black = 0
@@ -172,14 +171,13 @@ class Clique:
                 index = self.edge_ij_2_index(*edge)  # index of edge
                 _inverted_index[index] = _inverted_index.get(index, [])
                 _inverted_index[index].append(i)  # add the clique to the edge
-
         return _inverted_index
 
     def edge_ij_2_index(self, i, j):
         """Transforms the edge index to the index of the edge in the list of edges"""
         if i >= j:
             return -1
-        return int((2*self.n-1-i) * i /2 + (j-i-1))
+        return int((2 * self.n - 1 - i) * i / 2 + (j - i - 1))
 
     def indicator_variable(self, i):
         """
@@ -201,14 +199,8 @@ class Clique:
                 else:  # the same color
                     count += 1
         if colors_flag == -1:  # no colored found for the clique yet
-            return np.power(1/2, self.n_edges_clique-1)
-        return np.power(1/2, self.n_edges_clique - count)
-
-    def test(self):
-        self.edges_color[0] = 0
-        self.edges_color[1] = 0
-        self.edges_color[2] = 0
-
+            return np.power(1 / 2, self.n_edges_clique - 1)
+        return np.power(1 / 2, self.n_edges_clique - count)
 
     def draw_graph(self):
         draw_edges_color = []
@@ -217,19 +209,23 @@ class Clique:
                 draw_edges_color.append(self.white)
             else:
                 draw_edges_color.append(self.black)
-        nx.draw(self.G, self.default_layout, with_labels=True, node_size=600,
+        nx.draw(self.G, self.default_layout, with_labels=True, node_size=400,
                 node_color=self.node_color,
                 edgecolors=self.node_edge_color,
                 edge_color=draw_edges_color,
-                width=2)
-        # nx.draw_networkx_edges(self.G,self.default_layout, width=8, edge_color=draw_edges_color, alpha=0.5)
+                width=1)
+        # nx.draw_networkx_edges(self.G,self.default_layout, width=4, edge_color=draw_edges_color, alpha=0.5)
         plt.show()
 
 
 if __name__ == '__main__':
-    c = Clique(20)
+    n = 50
+    c = Clique(n)
     ans, t1 = c.naive()
     _, t2 = c.solve()
     _, t3 = c.table()
     c.draw_graph()
-    print(f"Done! t1: {t1}, t2: {t2}, t3: {t3}")
+    table = [["algorithm", "n", "time"], ["naïve", n, t1], ["better", n, t2], ["best", n, t3]]
+    print(f"Done! Naïve solution: {t1}, Better solution: {t2}, t3: {t3}")
+    print(f"The answer is: {ans}")
+    print(tabulate(table, headers="firstrow", tablefmt="fancy_grid"))
