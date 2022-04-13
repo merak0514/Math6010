@@ -219,7 +219,7 @@ class Clique:
 
 
 if __name__ == '__main__':
-    n = 50
+    n = 20
     c = Clique(n)
     ans, t1 = c.naive()
     _, t2 = c.solve()

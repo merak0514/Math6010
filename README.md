@@ -20,3 +20,13 @@ Kn is a complete graph (a clique) with n nodes.
 Theorem: There is a two-coloring of Kn with at most C<sub>n</sub><sup>4</sup> * 2<sup>-5</sup> monochromatic K4.
 
 Write a program to find the solution.
+
+    python3 hw2/main.py
+
+There are three different solutions.
+
+![table.png](hw2/img/table.png)
+
+Visualization of the solution.
+
+![viz.png](hw2/img/visiualization.png)
