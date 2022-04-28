@@ -21,6 +21,7 @@ s.t. \quad &V = X_0 \cup X_1 \,and \ |X_0| = |X_1| = n
 
 This is a NP-Complete problem. This homework is aiming at developing a heuristic algorithm.
 
+    python3 hw3/main.py
 
 ## Homework 2: Two-coloring of Kn, derandomized algorithm
 
