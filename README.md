@@ -10,15 +10,16 @@ Follow the commands below to start.
 
 Given a complete graph $G(V,E)$ with $|V|=2n$, 
 and a mapping of cost $C:V\times{V}\rightarrow\mathbb{R}$. 
-Find a 2-partition of the graph, such that each partition has $n$ vertex,
-and the total cost of those edges whose vertexes
-are in the different partitions is minimized.
+Find a 2-partition of the graph, such that each partition has $n$ vertexes,
+while minimizing the capacity of edges cut. Edges cut denotes those edges with
+vertexes in different partitions.
 
 $$\begin{aligned}
-min \quad &c([X_0,X_1]) = \sum_{\{u,v\}\in E,u\in X_0,v\in X_1}cost(u,v)\newline
-s.t. \quad &V = X_0 \cup X_1 \,and \,|X_0| = |X_1| = n
+min \quad &c(X_0,X_1) = \sum_{\{u,v\}\in E,u\in X_0,v\in X_1}cost(u,v)\newline
+s.t. \quad &V = X_0 \cup X_1 \,and \ |X_0| = |X_1| = n
 \end{aligned}$$
 
+This is a NP-Complete problem. This homework is aiming at developing a heuristic algorithm.
 
 
 ## Homework 2: Two-coloring of Kn, derandomized algorithm
