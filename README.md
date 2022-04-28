@@ -8,15 +8,17 @@ Follow the commands below to start.
 
 ## Homework 3: Balanced graph partitioning, heuristic algorithm
 
-Given a complete graph ![](z) with ![](https://latex.codecogs.com/svg.latex?|V|=2n), 
-and a mapping of cost ![](https://latex.codecogs.com/svg.latex?C:V\times{V}\rightarrow\mathbb{R}). 
+Given a complete graph $G(V,E)$ with $|V|=2n$, 
+and a mapping of cost $C:V\times{V}\rightarrow\mathbb{R}$. 
 Find a 2-partition of the graph, such that each partition has $n$ vertex,
 and the total cost of those edges whose vertexes
 are in the different partitions is minimized.
 
-$$min \quad c([X_0,X_1]) = \sum_{\{u,v\}\in E,u\in X_0,v\in X_1}cost(u,v)$$
+$$\begin{aligned}
+min \quad &c([X_0,X_1]) = \sum_{\{u,v\}\in E,u\in X_0,v\in X_1}cost(u,v)\\
+s.t. \quad &V = X_0 \cup X_1 \,and \,|X_0| = |X_1| = n
+\end{aligned}$$
 
-![\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}](https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}) 
 
 
 ## Homework 2: Two-coloring of Kn, derandomized algorithm
