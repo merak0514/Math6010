@@ -23,6 +23,10 @@ This is a NP-Complete problem. This homework is aiming at developing a heuristic
 
     python3 hw3/main.py
 
+The following table shows comparison between heuristic algorithm and traversed algorithm:
+
+![](hw3/comparison.png)
+
 ## Homework 2: Two-coloring of Kn, derandomized algorithm
 
 Kn is a complete graph (a clique) with n nodes. 
