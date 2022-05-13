@@ -1,4 +1,7 @@
-# Math6010
+# Math6010 Graph and Networks
+
+Taught by DDM in SJTU.
+
 Three homeworks till now. Hw1 for greedy approach, Hw2 for derandomized approach, Hw3 for heuristic algorithm.
 
 Follow the commands below to start.
